@@ -74,6 +74,10 @@ class NetworkConnectionClass(QtCore.QObject):
         self.bytesAvailable = 0
 
 
+
+
+
+
 #        TestMessage = QByteArray(bytearray.fromhex('A1 A2 A3')); TestMessage2 = QByteArray(bytearray.fromhex('A4 A5 A6'))
 #        self.BufferWriteQueue.write(TestMessage); self.BufferWriteQueue.write(TestMessage2)
 #        print("BUFFER - ",self.NetworkDataArray)

@@ -33,6 +33,8 @@ if __name__ == '__main__':
     MainController = PyQtMainController.MainController()
     MainController.Window.show()
 
+    
+
 
     sys.exit(app.exec_())
 
