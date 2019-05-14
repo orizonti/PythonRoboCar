@@ -1,4 +1,11 @@
 import sys
+sys.path.append("./MainWindowModule")
+sys.path.append("./NetworkConnection")
+sys.path.append("./SensorAcceleration")
+sys.path.append("./COMPort")
+sys.path.append("./DCMotors")
+sys.path.append("./StepMotors")
+sys.path.append("./PlotGraphics")
 
 from MainWindowModule import MainWindowClass
 from NetworkModule import NetworkConnectionClass
@@ -110,7 +117,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     MainBlock = MainController()
-
 
 
     sys.exit(app.exec_())
