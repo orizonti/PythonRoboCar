@@ -1,4 +1,5 @@
 from PySide2.QtCore import QDataStream
+from PySide2.QtCore import QBuffer,QDataStream,QByteArray
 
 class DataTransferHeader(object):
     def __init__(self,HB1=0x00,HB2=0x00,UNIT=6):
@@ -11,6 +12,12 @@ class DataTransferHeader(object):
         self.HEADER_B1 = Sender.readInt16()
         self.HEADER_B2 = Sender.readInt16()
         self.MESSAGE_SIZE = Sender.readInt16()
+
+    def __rshift__(self, Sender:QDataStream):
+        print("HEADER LOAD TO DATA STREAM")
+        Sender.writeInt16(self.HEADER_B1)
+        Sender.writeInt16(self.HEADER_B2)
+        Sender.writeInt16(self.MESSAGE_SIZE)
 
 class DC_Motor_Control_Data(DataTransferHeader):
     def __init__(self):
@@ -78,4 +85,18 @@ class Accelerometer_Data(DataTransferHeader):
         self.Pitch = Sender.readInt16()
 
 
+
+class ConnectCheckRequest(DataTransferHeader):
+    def __init__(self):
+        DataTransferHeader.__init__(self,0xF1,0xC1,13)
+        self.Connect = 0
+
+    def __lshift__(self, Sender:QDataStream):
+        self.Connect = Sender.readInt8()
+
+    def __rshift__(self, Sender:QDataStream):
+        Sender.writeInt16(self.HEADER_B1)
+        Sender.writeInt16(self.HEADER_B2)
+        Sender.writeInt16(self.MESSAGE_SIZE)
+        Sender.writeInt8(self.Connect)
 

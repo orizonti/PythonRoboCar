@@ -4,10 +4,12 @@ import sys
 from PySide2 import QtCore
 from PySide2.QtCore import QBuffer,QDataStream,QByteArray
 from PySide2.QtNetwork import QTcpSocket
+from PySide2.QtCore import QIODevice
 from PySide2.QtWidgets import QWidget
 from NetworkModuleUI import Ui_NetworkControl
 from TransferDataObjects import *
 from PySide2.QtCore import QObject, Signal, Slot
+
 
 
 #=========SIGNALS===================
@@ -39,7 +41,8 @@ class NetworkConnectionClass(QtCore.QObject):
         self.CommandSocket = QTcpSocket()
         self.CommandSocket.connected.connect(self.EventConnectedHandle)
         self.CommandSocket.readyRead.connect(self.RecieveData)
-        self.CommandSocket.connectToHost("192.168.100.5",2323)
+        self.CommandSocket.connectToHost("192.168.100.5",2323,QIODevice.ReadWrite)
+        #self.CommandSocket.connectToHost("127.0.0.1",2323,QIODevice.ReadWrite)
         #self.CommandSocket.connectToHost("192.168.20.196",2323)
 
         self.Display = WindowNetworkConnection()
@@ -72,11 +75,15 @@ class NetworkConnectionClass(QtCore.QObject):
         self.MinTransferUnit = 8
         self.MaxTransferUnit = 18
         self.bytesAvailable = 0
+        self.Display.ui.pushButton.clicked.connect(self.SendData)
 
+        #===================================================== WRITE BUFFER
+        self.WriteBuffer = QByteArray()
+        self.WriteBuffer.resize(40)
 
-
-
-
+        self.WriteDataStream = QDataStream(self.WriteBuffer)
+        self.WriteDataStream.setByteOrder(QDataStream.LittleEndian)
+        #=====================================================
 
 #        TestMessage = QByteArray(bytearray.fromhex('A1 A2 A3')); TestMessage2 = QByteArray(bytearray.fromhex('A4 A5 A6'))
 #        self.BufferWriteQueue.write(TestMessage); self.BufferWriteQueue.write(TestMessage2)
@@ -97,13 +104,13 @@ class NetworkConnectionClass(QtCore.QObject):
 
     def EventConnectedHandle(self):
         self.SignalDataRec.emit("CONNECTED TO HOST")
-        #self.SignalDataRec.emit("192.168.100.5 PORT 2323")
-        self.SignalDataRec.emit("192.168.20.196 PORT 2323")
+        self.SignalDataRec.emit("192.168.100.5 PORT 2323")
+        #self.SignalDataRec.emit("192.168.20.196 PORT 2323")
         #self.SignalDataRec.emit("BYTES IN REC BUFFER - " + str(self.bytesAvailable))
 
     def RecieveData(self):
         HEADER = QByteArray(); HEADER.resize(2)
-        if self.bytesAvailable < self.LimitBufferSize - self.MaxTransferUnit:
+        if self.bytesAvailable < self.LimitBufferSize - self.MaxTransferUnit:   #check that memory for packet available
             if self.BufferWrite.pos() < self.LimitBufferSize - self.MaxTransferUnit:
                 newData = self.CommandSocket.read(self.LimitBufferSize - self.bytesAvailable)
                 #print("NEW DATA - ",newData,"to POS - ",self.BufferWrite.pos())
@@ -138,6 +145,20 @@ class NetworkConnectionClass(QtCore.QObject):
 
         if(self.bytesAvailable >= self.MinTransferUnit):
             self.SignalFrameDataAvailable.emit()
+    def SendData(self):
+        Req = ConnectCheckRequest()
+        self.WriteDataStream.writeInt8(0x16)
+        self.WriteDataStream.writeInt8(0x16)
+        self.WriteDataStream.writeInt8(0x16)
+        self.WriteDataStream.writeInt8(0x16)
+        print("WRITE BUFFER - ",self.BufferWrite.data())
+        #self.CommandSocket.write(self.WriteBuffer)
+        #self.CommandSocket.write(bytearray(b'TestMessage\r\n'))
+        self.CommandSocket.waitForBytesWritten(20)
+        print("SOCKET OPEN - ",self.CommandSocket.isOpen())
+        print("SOCKET STATE - ",self.CommandSocket.state())
+        print("SOCKET IP - ",self.CommandSocket.localAddress())
+        print("===============================================")
 
 
 

@@ -46,3 +46,4 @@ class DCCMotorControlClass(QtCore.QObject):
         self.Display.DisplayState(self.MotorsState)
 
         return 0
+

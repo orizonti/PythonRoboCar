@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'NetworkModuleUI.ui',
 # licensing of 'NetworkModuleUI.ui' applies.
 #
-# Created: Mon Jan  7 20:49:13 2019
+# Created: Sun Jun 23 20:16:09 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -101,7 +101,7 @@ class Ui_NetworkControl(object):
         font.setBold(True)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("")
-        self.pushButton.setCheckable(True)
+        self.pushButton.setCheckable(False)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 6, 2, 1, 2)
         self.labelImageSocket = QtWidgets.QLabel(NetworkControl)

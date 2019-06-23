@@ -25,6 +25,7 @@ from PySide2.QtCharts import QtCharts
 
 
 class MainController(QtCore.QObject):
+    SignalSendData = Signal(str)
     def __init__(self):
         super(MainController,self).__init__()
         self.MainWindow = MainWindowClass()
@@ -33,9 +34,10 @@ class MainController(QtCore.QObject):
         self.DCMotors = DCCMotorControlClass()
         self.SensorAccel = SensorAccelerationClass()
 
-
         self.MainTimer = QTimer
         self.Network.SignalFrameDataAvailable.connect(self.PerformNetworkData)
+
+        self.SignalSendData.connect(self.Network.SendData)
 
         #self.SineWindowTest1 = ApplicationWindow()
         #self.SineWindowTest2 = ApplicationWindow()
