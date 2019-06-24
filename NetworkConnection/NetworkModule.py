@@ -78,11 +78,8 @@ class NetworkConnectionClass(QtCore.QObject):
         self.Display.ui.pushButton.clicked.connect(self.SendData)
 
         #===================================================== WRITE BUFFER
-        self.WriteBuffer = QByteArray()
-        self.WriteBuffer.resize(40)
+        self.SendBuffer = QByteArray()
 
-        self.WriteDataStream = QDataStream(self.WriteBuffer)
-        self.WriteDataStream.setByteOrder(QDataStream.LittleEndian)
         #=====================================================
 
 #        TestMessage = QByteArray(bytearray.fromhex('A1 A2 A3')); TestMessage2 = QByteArray(bytearray.fromhex('A4 A5 A6'))
@@ -147,18 +144,21 @@ class NetworkConnectionClass(QtCore.QObject):
             self.SignalFrameDataAvailable.emit()
     def SendData(self):
         Req = ConnectCheckRequest()
-        self.WriteDataStream.writeInt8(0x16)
-        self.WriteDataStream.writeInt8(0x16)
-        self.WriteDataStream.writeInt8(0x16)
-        self.WriteDataStream.writeInt8(0x16)
-        print("WRITE BUFFER - ",self.BufferWrite.data())
-        #self.CommandSocket.write(self.WriteBuffer)
-        #self.CommandSocket.write(bytearray(b'TestMessage\r\n'))
-        self.CommandSocket.waitForBytesWritten(20)
-        print("SOCKET OPEN - ",self.CommandSocket.isOpen())
-        print("SOCKET STATE - ",self.CommandSocket.state())
-        print("SOCKET IP - ",self.CommandSocket.localAddress())
-        print("===============================================")
+        WriteDataStream = QDataStream(self.SendBuffer,QIODevice.ReadWrite)
+        self.SendBuffer.clear()
+        self.SendBuffer.resize(Req.MESSAGE_SIZE)
+        Req >> WriteDataStream
+
+
+        WriteDataStream.setByteOrder(QDataStream.LittleEndian)
+        print("WRITE BUFFER - ",self.SendBuffer.toHex())
+        ##self.CommandSocket.write(self.WriteBuffer)
+        ##self.CommandSocket.write(bytearray(b'TestMessage\r\n'))
+        #self.CommandSocket.waitForBytesWritten(20)
+        #print("SOCKET OPEN - ",self.CommandSocket.isOpen())
+        #print("SOCKET STATE - ",self.CommandSocket.state())
+        #print("SOCKET IP - ",self.CommandSocket.localAddress())
+        #print("===============================================")
 
 
 

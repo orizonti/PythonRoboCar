@@ -88,15 +88,20 @@ class Accelerometer_Data(DataTransferHeader):
 
 class ConnectCheckRequest(DataTransferHeader):
     def __init__(self):
-        DataTransferHeader.__init__(self,0xF1,0xC1,13)
+        DataTransferHeader.__init__(self,0xF1,0xC1,7)
         self.Connect = 0
+        self.MESSAGE_SIZE = self.UNIT_SIZE
+
 
     def __lshift__(self, Sender:QDataStream):
+        print("READ PACKET TO ARRAY")
         self.Connect = Sender.readInt8()
 
     def __rshift__(self, Sender:QDataStream):
+        print("WRITE PACKET TO ARRAY")
         Sender.writeInt16(self.HEADER_B1)
         Sender.writeInt16(self.HEADER_B2)
-        Sender.writeInt16(self.MESSAGE_SIZE)
+        Sender.writeInt16(self.UNIT_SIZE)
         Sender.writeInt8(self.Connect)
+
 
