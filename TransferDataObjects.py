@@ -94,11 +94,10 @@ class ConnectCheckRequest(DataTransferHeader):
 
 
     def __lshift__(self, Sender:QDataStream):
-        print("READ PACKET TO ARRAY")
         self.Connect = Sender.readInt8()
+        print("CONNECT CHECK REQUEST LOAD FROM DATA STREAM")
 
     def __rshift__(self, Sender:QDataStream):
-        print("WRITE PACKET TO ARRAY")
         Sender.writeInt16(self.HEADER_B1)
         Sender.writeInt16(self.HEADER_B2)
         Sender.writeInt16(self.UNIT_SIZE)
