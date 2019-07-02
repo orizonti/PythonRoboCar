@@ -77,22 +77,22 @@ class MainController(QtCore.QObject):
         HEADER = DataTransferHeader()
         while self.Network.bytesAvailable >= self.Network.MinTransferUnit:
             self.Network >> HEADER
-            print("         HEADER - ",hex(HEADER.HEADER_B1),hex(HEADER.HEADER_B2))
 
             if HEADER.HEADER_B1 == 0xF1:
                 if HEADER.HEADER_B2 == 0xD1:
                     self.DCMotors << self.Network
-                if HEADER.HEADER_B2 == 0xD2:
-                    self.StepMotors << self.Network
                 if HEADER.HEADER_B2 == 0xD3:
+                    self.StepMotors << self.Network
+                if HEADER.HEADER_B2 == 0xD2:
                     self.SensorAccel << self.Network
                 if HEADER.HEADER_B2 == 0xC1:
                     Data = ConnectCheckRequest()
                     self.Network >> Data
                     self.Network.SignalDataRec.emit("CHECK CONNECT - " + str(Data.Connect),0)
                     #DISPLAY STRING IN NetworkModuleUI
-                else:
-                    pass
+            else:
+                print("ERROR HEADER - ",hex(HEADER.HEADER_B1),hex(HEADER.HEADER_B2))
+                pass
 
 
 

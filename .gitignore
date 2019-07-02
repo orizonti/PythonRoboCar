@@ -157,3 +157,7 @@ venv.bak/
 
 Images
 .idea
+
+*.taghl
+
+tags

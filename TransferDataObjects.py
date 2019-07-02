@@ -35,7 +35,7 @@ class DC_Motor_Control_Data(DataTransferHeader):
 
 class Step_Motor_Control_Data(DataTransferHeader):
     def __init__(self):
-        DataTransferHeader.__init__(self,0xF1,0xD1,12)
+        DataTransferHeader.__init__(self,0xF1,0xD3,12)
         self.AngleMotor1 = 0
         self.AngleMotor2 = 0
         self.AngleMotor3 = 0
@@ -58,7 +58,7 @@ class Step_Motor_Control_Data(DataTransferHeader):
 
 class Accelerometer_Data(DataTransferHeader):
     def __init__(self):
-        DataTransferHeader.__init__(self,0xF1,0xD3,18)
+        DataTransferHeader.__init__(self,0xF1,0xD2,12)
         self.AccelX = 0
         self.AccelY = 0
         self.AccelZ = 0
@@ -72,17 +72,18 @@ class Accelerometer_Data(DataTransferHeader):
         self.Pitch = 0
 
     def __lshift__(self, Sender:QDataStream):
-        self.AccelX = Sender.readInt16()
-        self.AccelY = Sender.readInt16()
-        self.AccelZ = Sender.readInt16()
+        self.AccelX = Sender.readUInt16()
+        self.AccelY = Sender.readUInt16()
+        self.AccelZ = Sender.readUInt16()
 
-        self.AngularSpeedX = Sender.readInt16()
-        self.AngularSpeedY = Sender.readInt16()
-        self.AngularSpeedZ = Sender.readInt16()
+        self.AngularSpeedX = Sender.readUInt16()
+        self.AngularSpeedY = Sender.readUInt16()
+        self.AngularSpeedZ = Sender.readUInt16()
 
-        self.Azimuth = Sender.readInt16()
-        self.Elevation = Sender.readInt16()
-        self.Pitch = Sender.readInt16()
+        #self.Azimuth = Sender.readUInt16()
+        #self.Elevation = Sender.readUInt16()
+        #self.Pitch = Sender.readUInt16()
+        #print("ACCEL - ",self.AccelX,self.AccelY,self.AccelZ)
 
 
 
