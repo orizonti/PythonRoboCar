@@ -3,7 +3,7 @@
 import sys
 from PySide2 import QtCore
 from PySide2.QtCore import QBuffer,QDataStream,QByteArray
-from PySide2.QtNetwork import QTcpSocket
+from PySide2.QtNetwork import QTcpSocket, QUdpSocket, QHostAddress
 from PySide2.QtCore import QIODevice
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import QTime
@@ -44,12 +44,15 @@ class NetworkConnectionClass(QtCore.QObject):
     SignalFrameDataAvailable = Signal()
     def __init__(self,parent=None):
         super(NetworkConnectionClass,self).__init__(parent=parent)
-        self.CommandSocket = QTcpSocket()
+        #self.CommandSocket = QTcpSocket()
+        self.CommandSocket = QUdpSocket()
+        self.CommandSocket.bind(QHostAddress("192.168.100.2"),2323)
         self.CommandSocket.connected.connect(self.EventConnectedHandle)
         self.CommandSocket.readyRead.connect(self.RecieveData)
+
         #self.CommandSocket.connectToHost("192.168.100.5",2323,QIODevice.ReadWrite)
         #self.CommandSocket.connectToHost("127.0.0.1",2323,QIODevice.ReadWrite)
-        self.CommandSocket.connectToHost("192.168.20.196",2323,QIODevice.ReadWrite)
+        #self.CommandSocket.connectToHost("192.168.20.196",2323,QIODevice.ReadWrite)
         #print("NETWORK - ",self.CommandSocket.localAddress(),self.CommandSocket.peerAddress())
 
         self.Display = WindowNetworkConnection()
@@ -119,14 +122,18 @@ class NetworkConnectionClass(QtCore.QObject):
         #self.SignalDataRec.emit("BYTES IN REC BUFFER - " + str(self.bytesAvailable))
 
     def RecieveData(self):
+        #self.CommandSocket.receiveDatagram(20)
         HEADER = QByteArray(); HEADER.resize(2)
         if self.bytesAvailable < self.LimitBufferSize - self.MaxTransferUnit:   #check that memory for packet available
             if self.BufferWrite.pos() < self.LimitBufferSize - self.MaxTransferUnit:
-                newData = self.CommandSocket.read(self.LimitBufferSize - self.bytesAvailable)
+                (newData,sender,senderPort) = self.CommandSocket.readDatagram(20)
+
+                #newData = self.CommandSocket.read(self.LimitBufferSize - self.bytesAvailable)
                 #print("   NEW DATA - ",newData.toHex(),"to POS - ",self.BufferWrite.pos())
-                #self.BufferWrite.write(newData)
-                #self.bytesAvailable += newData.size()
+                self.BufferWrite.write(newData)
+                self.bytesAvailable += newData.size()
                 print(self.Timer.restart())
+                #print("REC ",data)
                 #print("   BUFFER - ",self.BufferWrite.data().toHex())
 
             else:
@@ -141,9 +148,9 @@ class NetworkConnectionClass(QtCore.QObject):
                         newData = self.CommandSocket.read(self.LimitBufferSize - self.bytesAvailable)
                         self.WriteDataStream.writeInt16(H1)
                         self.WriteDataStream.writeInt16(H2)
-                        #print("==============================================================")
-                        #print("SEEK TO 0")
-                        #print("NEW DATA - ",newData,"to POS - ",self.BufferWrite.pos() - 4)
+                        print("==============================================================")
+                        print("SEEK TO 0")
+                        print("NEW DATA - ",newData,"to POS - ",self.BufferWrite.pos() - 4)
                         self.BufferWrite.write(newData)
                         self.bytesAvailable += (4 + newData.size())
                         #print("BUFFER - ",self.NetworkDataArray.toHex())

@@ -58,7 +58,7 @@ class Step_Motor_Control_Data(DataTransferHeader):
 
 class Accelerometer_Data(DataTransferHeader):
     def __init__(self):
-        DataTransferHeader.__init__(self,0xF1,0xD2,12)
+        DataTransferHeader.__init__(self,0xF1,0xD2,14)
         self.AccelX = 0
         self.AccelY = 0
         self.AccelZ = 0
@@ -70,6 +70,7 @@ class Accelerometer_Data(DataTransferHeader):
         self.Azimuth = 0
         self.Elevation = 0
         self.Pitch = 0
+        self.MessageCount = 0
 
     def __lshift__(self, Sender:QDataStream):
         self.AccelX = Sender.readUInt16()
@@ -79,6 +80,7 @@ class Accelerometer_Data(DataTransferHeader):
         self.AngularSpeedX = Sender.readUInt16()
         self.AngularSpeedY = Sender.readUInt16()
         self.AngularSpeedZ = Sender.readUInt16()
+        self.MessageCount = Sender.readUInt16()
 
         #self.Azimuth = Sender.readUInt16()
         #self.Elevation = Sender.readUInt16()

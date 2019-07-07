@@ -69,9 +69,9 @@ class MainController(QtCore.QObject):
         self.MainWindow.show()
         self.MainWindow.resize(1900,900)
 
-        self.ThreadNetwork = QThread()
-        self.Network.moveToThread(self.ThreadNetwork)
-        self.ThreadNetwork.start()
+        #self.ThreadNetwork = QThread()
+        #self.Network.moveToThread(self.ThreadNetwork)
+        #self.ThreadNetwork.start()
 
     def PerformNetworkData(self): #Recieve SignalFrameAvailable from NetworkModule
         HEADER = DataTransferHeader()
